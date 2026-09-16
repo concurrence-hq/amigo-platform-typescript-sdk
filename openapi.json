@@ -3378,27 +3378,6 @@
             "title": "Participants",
             "type": "array"
           },
-          "per_turn_accuracy": {
-            "anyOf": [
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Per Turn Accuracy"
-          },
           "phone_number": {
             "anyOf": [
               {
@@ -3539,17 +3518,6 @@
               }
             ]
           },
-          "transcript_accuracy": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Transcript Accuracy"
-          },
           "triggered_behaviors": {
             "default": [],
             "items": {
@@ -3587,32 +3555,6 @@
               }
             ],
             "title": "Twilio Recording Sid"
-          },
-          "verified_transcript": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Verified Transcript"
-          },
-          "verified_words": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Verified Words"
           },
           "workspace_id": {
             "anyOf": [
@@ -45344,7 +45286,7 @@
                 "type": "null"
               }
             ],
-            "description": "Unattributed for a null service ID; otherwise null because facts do not retain service names.",
+            "description": "Service name at the latest metadata refresh; null if unavailable. Unattributed for a null service ID.",
             "title": "Service Name"
           },
           "uncached_input_tokens": {
@@ -46113,17 +46055,6 @@
             ],
             "title": "Tool Summary"
           },
-          "transcript_accuracy": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Transcript Accuracy"
-          },
           "twilio_recording_duration": {
             "anyOf": [
               {
@@ -46145,17 +46076,6 @@
               }
             ],
             "title": "Twilio Recording Sid"
-          },
-          "verified_transcript": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Verified Transcript"
           }
         },
         "title": "VoiceDetail",
@@ -46572,17 +46492,6 @@
             ],
             "title": "Tone"
           },
-          "transcript_correction_enabled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Transcript Correction Enabled"
-          },
           "tts_config": {
             "anyOf": [
               {
@@ -46725,10 +46634,6 @@
             ],
             "title": "Tone"
           },
-          "transcript_correction_enabled": {
-            "title": "Transcript Correction Enabled",
-            "type": "boolean"
-          },
           "tts_config": {
             "anyOf": [
               {
@@ -46789,7 +46694,6 @@
           "pronunciation_dict_id",
           "sensitive_topics",
           "post_call_analysis_enabled",
-          "transcript_correction_enabled",
           "stt_provider",
           "tts_provider",
           "tts_config"
@@ -63984,6 +63888,65 @@
         ]
       }
     },
+    "/v1/{workspace_id}/intake/sources/{source_id}": {
+      "delete": {
+        "description": "Remove a source registration without deleting upstream files or imported data.",
+        "operationId": "delete_intake_source_v1__workspace_id__intake_sources__source_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "source_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Source Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Write permission required"
+          },
+          "404": {
+            "description": "Source not found"
+          },
+          "409": {
+            "description": "Source operation in progress"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "Coordination unavailable"
+          }
+        },
+        "summary": "Delete Intake Source",
+        "tags": [
+          "Intake"
+        ]
+      }
+    },
     "/v1/{workspace_id}/intake/sources/{source_id}/sync": {
       "post": {
         "operationId": "sync_intake_source_v1__workspace_id__intake_sources__source_id__sync_post",
@@ -72617,7 +72580,7 @@
         ]
       },
       "put": {
-        "description": "Update the voice experience settings for a workspace.\n\nOnly provided fields are updated; omitted fields retain their current\nvalues. Set a field to ``null`` to reset it to default.\n\n**Voice Identity & Style**\n- **voice_id**: Voice identity UUID — determines the agent's voice persona\n- **tone**: Emotional baseline (``calm``, ``sympathetic``,\n  ``enthusiastic``, ``content``, ``curious``, ``cheerful``,\n  ``serious``, ``friendly``). The system also adapts tone dynamically\n  based on real-time caller emotion analysis; this setting provides\n  the baseline when no strong emotional signal is detected.\n- **speed**: Speech rate multiplier (0.5-2.0)\n- **volume**: Volume multiplier (0.0-1.0)\n- **language**: BCP-47 language tag (default ``en``)\n\n**Speech Recognition Boost**\n- **keyterms**: Exact words the speech recognition engine should\n  prioritize. Use for specific names, drug names, and org jargon.\n  Example: ``[\"Dr. Ramirez\", \"metformin\", \"HIPAA\"]``\n\n**Post-Call Intelligence**\n- **post_call_analysis_enabled**: Run automated quality scoring after\n  each call ends (default ``true``)\n- **transcript_correction_enabled**: Re-verify transcripts with a\n  high-accuracy batch model after call ends (default ``true``)\n\n#### Permissions\n* Requires admin or owner role.",
+        "description": "Update the voice experience settings for a workspace.\n\nOnly provided fields are updated; omitted fields retain their current\nvalues. Set a field to ``null`` to reset it to default.\n\n**Voice Identity & Style**\n- **voice_id**: Voice identity UUID — determines the agent's voice persona\n- **tone**: Emotional baseline (``calm``, ``sympathetic``,\n  ``enthusiastic``, ``content``, ``curious``, ``cheerful``,\n  ``serious``, ``friendly``). The system also adapts tone dynamically\n  based on real-time caller emotion analysis; this setting provides\n  the baseline when no strong emotional signal is detected.\n- **speed**: Speech rate multiplier (0.5-2.0)\n- **volume**: Volume multiplier (0.0-1.0)\n- **language**: BCP-47 language tag (default ``en``)\n\n**Speech Recognition Boost**\n- **keyterms**: Exact words the speech recognition engine should\n  prioritize. Use for specific names, drug names, and org jargon.\n  Example: ``[\"Dr. Ramirez\", \"metformin\", \"HIPAA\"]``\n\n**Post-Call Intelligence**\n- **post_call_analysis_enabled**: Run automated quality scoring after\n  each call ends (default ``true``)\n\n#### Permissions\n* Requires admin or owner role.",
         "operationId": "update-voice-settings",
         "parameters": [
           {

@@ -3319,6 +3319,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/{workspace_id}/intake/sources/{source_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Intake Source
+         * @description Remove a source registration without deleting upstream files or imported data.
+         */
+        delete: operations["delete_intake_source_v1__workspace_id__intake_sources__source_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/{workspace_id}/intake/sources/{source_id}/sync": {
         parameters: {
             query?: never;
@@ -5446,8 +5466,6 @@ export interface paths {
          *     **Post-Call Intelligence**
          *     - **post_call_analysis_enabled**: Run automated quality scoring after
          *       each call ends (default ``true``)
-         *     - **transcript_correction_enabled**: Re-verify transcripts with a
-         *       high-accuracy batch model after call ends (default ``true``)
          *
          *     #### Permissions
          *     * Requires admin or owner role.
@@ -8666,8 +8684,6 @@ export interface components {
              * @default []
              */
             participants?: components["schemas"]["Participant"][];
-            /** Per Turn Accuracy */
-            per_turn_accuracy?: (number | null)[] | null;
             /** Phone Number */
             phone_number?: string | null;
             /** Quality Score */
@@ -8700,8 +8716,6 @@ export interface components {
              */
             status?: string;
             timeline?: components["schemas"]["PlaybackTimeline"] | null;
-            /** Transcript Accuracy */
-            transcript_accuracy?: number | null;
             /**
              * Triggered Behaviors
              * @default []
@@ -8716,12 +8730,6 @@ export interface components {
             twilio_recording_duration?: number | null;
             /** Twilio Recording Sid */
             twilio_recording_sid?: string | null;
-            /** Verified Transcript */
-            verified_transcript?: string | null;
-            /** Verified Words */
-            verified_words?: {
-                [key: string]: unknown;
-            }[] | null;
             /** Workspace Id */
             workspace_id?: string | null;
         };
@@ -26187,7 +26195,7 @@ export interface components {
             service_id: string | null;
             /**
              * Service Name
-             * @description Unattributed for a null service ID; otherwise null because facts do not retain service names.
+             * @description Service name at the latest metadata refresh; null if unavailable. Unattributed for a null service ID.
              */
             service_name: string | null;
             /** Uncached Input Tokens */
@@ -26529,14 +26537,10 @@ export interface components {
             tool_summary?: {
                 [key: string]: unknown;
             } | null;
-            /** Transcript Accuracy */
-            transcript_accuracy?: number | null;
             /** Twilio Recording Duration */
             twilio_recording_duration?: number | null;
             /** Twilio Recording Sid */
             twilio_recording_sid?: string | null;
-            /** Verified Transcript */
-            verified_transcript?: string | null;
         };
         /** VoiceJudgeRecentResponse */
         VoiceJudgeRecentResponse: {
@@ -26651,8 +26655,6 @@ export interface components {
             stt_provider?: ("deepgram" | "openai" | "cartesia") | null;
             /** Tone */
             tone?: string | null;
-            /** Transcript Correction Enabled */
-            transcript_correction_enabled?: boolean | null;
             /** Tts Config */
             tts_config?: {
                 [key: string]: unknown;
@@ -26689,8 +26691,6 @@ export interface components {
             stt_provider: ("deepgram" | "openai" | "cartesia") | null;
             /** Tone */
             tone: string | null;
-            /** Transcript Correction Enabled */
-            transcript_correction_enabled: boolean;
             /** Tts Config */
             tts_config: {
                 [key: string]: unknown;
@@ -36386,6 +36386,64 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    delete_intake_source_v1__workspace_id__intake_sources__source_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspace_id: string;
+                source_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Write permission required */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Source not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Source operation in progress */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Coordination unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
