@@ -3777,6 +3777,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/{workspace_id}/memory/dimensions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Memory Dimension */
+        post: operations["create-memory-dimension"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/{workspace_id}/metering/emit": {
         parameters: {
             query?: never;
@@ -12624,7 +12641,7 @@ export interface components {
             description: string;
             /**
              * Headers
-             * @description Static request headers.
+             * @description Static headers or exact ``$param.<name>`` input-parameter bindings.
              */
             headers?: {
                 [key: string]: string;
@@ -15797,6 +15814,13 @@ export interface components {
             endpoint: string;
             /** Integration */
             integration: string;
+            /**
+             * Skill Input Bindings
+             * @description Endpoint parameter -> parent skill input mappings injected at dispatch.
+             */
+            skill_input_bindings?: {
+                [key: string]: string;
+            };
         };
         /**
          * InteractionDynamics
@@ -24037,6 +24061,10 @@ export interface components {
             audio_filler_triggered_after?: number | null;
             /** Audio Fillers */
             audio_fillers?: string[] | null;
+            /** Context Binding Aliases */
+            context_binding_aliases?: {
+                [key: string]: components["schemas"]["SlugString"];
+            };
             /** Context Bindings */
             context_bindings?: string[];
             /**
@@ -27112,6 +27140,13 @@ export interface components {
             endpoint: string;
             /** Integration */
             integration: string;
+            /**
+             * Skill Input Bindings
+             * @description Endpoint parameter -> parent skill input mappings injected at dispatch.
+             */
+            skill_input_bindings?: {
+                [key: string]: string;
+            };
         };
         /**
          * StaticToolDef
@@ -27291,7 +27326,7 @@ export interface components {
             description: string;
             /**
              * Headers
-             * @description Static headers merged into every request.
+             * @description Request headers. An exact ``$param.<name>`` value binds and consumes an input parameter.
              */
             headers?: {
                 [key: string]: string;
@@ -27639,6 +27674,13 @@ export interface components {
             endpoint: string;
             /** Integration */
             integration: string;
+            /**
+             * Skill Input Bindings
+             * @default {}
+             */
+            skill_input_bindings?: {
+                [key: string]: string;
+            };
         };
         /** StaticToolDef */
         src__routes__internal_skills__StaticToolDef: {
@@ -27650,6 +27692,18 @@ export interface components {
             };
             /** Name */
             name: string;
+        };
+        /** Request */
+        src__routes__memory_dimensions__create_memory_dimension__Request: {
+            /** Description */
+            description: string;
+            /** Key */
+            key: string;
+            /**
+             * Service Id
+             * Format: uuid
+             */
+            service_id: string;
         };
         /** AuditEventResponse */
         src__routes__operators_models__AuditEventResponse: {
@@ -37671,6 +37725,39 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StratifiedFitsResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "create-memory-dimension": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                workspace_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["src__routes__memory_dimensions__create_memory_dimension__Request"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
